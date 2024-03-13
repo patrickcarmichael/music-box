@@ -1,20 +1,19 @@
 name: music-box
-author: Jack LaFond & Casper da Costa-Luis
-description: GitHub Action for injecting last week's listening report from last.fm into a gist
-
-# using env: instead for now to match circleci
-# inputs:
-#   LASTFM_KEY:
-#     required: true
-#     description: "last.fm key"
-#   GH_TOKEN:
-#   LFMUSERNAME:
-#   GIST_ID:
-
-runs:
-  using: node12
-  main: ./index.js
-
-branding:
-  icon: music
-  color: red
+on:
+  schedule:
+    - cron: '0 * * * *'  # hourly
+  push:
+    branches: master
+jobs:
+  musicbox:
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v2
+     - run: npm install
+     - name: Update
+       uses: ./
+       env:
+          LASTFM_KEY: ${{ secrets.LASTFM_KEY }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          LFMUSERNAME: ${{ secrets.LFMUSERNAME }}
+          GIST_ID: ${{ secrets.GIST_ID }}
